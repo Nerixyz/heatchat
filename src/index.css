@@ -1,0 +1,192 @@
+:root {
+    --dark100: #121212;
+    --dark150: #171717;
+    --dark200: #212121;
+    --dark250: #252525;
+    --dark300: #303030;
+
+    --text-color: #eee;
+    --border-color: rgba(238, 238, 238, 0.61);
+    --monospace: monospace;
+
+    --small-text: 0.5rem;
+
+    --day-color: #9029f1;
+    --easing-func: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+body {
+    background-color: var(--dark100);
+    color: var(--text-color);
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#req-form {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 1rem 2rem;
+}
+
+#req-form input[type=submit] {
+    grid-column: span 2;
+}
+
+#main-view {
+    display: grid;
+    grid-template-rows: 1fr auto;
+    grid-template-columns: 1fr auto;
+    margin: 10px;
+    transition: opacity 500ms,transform 150ms var(--easing-func);
+    transform: scale(1);
+    background-color: var(--dark150);
+    padding: 2rem;
+    border-radius: 5px;
+}
+
+#main-view:hover {
+    transform: scale(1.4) translateY(25%);
+}
+
+#hours {
+    font-family: var(--monospace);
+    font-size: max(0.5rem, calc(300px / 24 * 0.8));
+}
+
+.hour:not(:last-child) {
+    border-bottom: var(--border-color) solid 1px;
+}
+
+#months {
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-auto-flow: column;
+}
+
+.month-name {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: var(--monospace);
+    font-size: var(--small-text);
+}
+
+#months .month-name:not(:last-child) {
+    border-right: var(--border-color) solid 1px;
+}
+
+#day-view {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 10px 2px;
+    margin-top: 5rem;
+}
+
+#day-view .year-view {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+}
+
+#day-view .filler {
+    grid-column: span var(--span, 0);
+}
+
+#day-view .year-name {
+    grid-column: span 12;
+    font-weight: bold;
+    margin-left: 3px;
+}
+
+#day-view .month {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.month-visual {
+    display: grid;
+    grid-template-rows: repeat(7, 10px);
+    grid-auto-flow: column;
+    gap: 3px;
+}
+
+.month-visual .day {
+    width: 10px;
+    height: 10px;
+    background-color: var(--day-color);
+    opacity: var(--intensity, 0);
+    transform: scale(1);
+    transition: transform 150ms var(--easing-func);
+}
+.month-visual .day:hover {
+    transform: scale(2);
+}
+
+.month-visual .day.start-day-0 {
+    grid-row: 1;
+}
+
+.month-visual .day.start-day-1 {
+    grid-row: 2;
+}
+
+.month-visual .day.start-day-2 {
+    grid-row: 3;
+}
+
+.month-visual .day.start-day-3 {
+    grid-row: 4;
+}
+
+.month-visual .day.start-day-4 {
+    grid-row: 5;
+}
+
+.month-visual .day.start-day-5 {
+    grid-row: 6;
+}
+
+.month-visual .day.start-day-6 {
+    grid-row: 7;
+}
+
+.hidden {
+    opacity: 0;
+}
+
+input[type=text] {
+    background-color: var(--dark200);
+    color: var(--text-color);
+    border: rgba(255, 255, 255, 0.37) solid 1px;
+    border-radius: 4px;
+    padding: 5px 10px;
+}
+
+input[type=text]:hover {
+    background-color: var(--dark300);
+}
+
+input[type=button], input[type=submit] {
+    background-color: var(--day-color);
+    color: var(--text-color);
+    border: rgba(255, 255, 255, 0.37) solid 1px;
+    border-radius: 4px;
+    padding: 6px 20px;
+    margin: 2px 5px;
+    cursor: pointer;
+}
+
+canvas {
+    image-rendering: optimizeSpeed;             /* Older versions of FF          */
+    image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
+    image-rendering: -webkit-optimize-contrast; /* Safari                        */
+    image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
+    image-rendering: pixelated;                 /* Awesome future-browsers       */
+    -ms-interpolation-mode: nearest-neighbor;   /* IE                            */
+}
