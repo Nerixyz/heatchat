@@ -16,6 +16,7 @@ export interface WorkerRequest {
   logs: AvailableLog[];
   height: number;
   user: string;
+  userID: string;
   channel: string;
   justlogUrl: string;
 }

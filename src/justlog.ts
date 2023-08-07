@@ -1,3 +1,5 @@
+import { RatelimitError } from './worker/throttle';
+
 export interface AvailableLog {
   year: string;
   month: string;
@@ -50,17 +52,38 @@ export function compareAvailableLog(a: AvailableLog, b: AvailableLog): number {
   return availableLogMonth(a) - availableLogMonth(b);
 }
 
-export async function getChannelLogs(
+export function getChannelLogs(
   justlogUrl: string,
   channel: string,
   user: string,
   year: string | number,
-  month: string | number,
+  month: string | number
 ): Promise<LogMessage[]> {
   const encode = encodeURIComponent;
-  const res = await fetch(
-    `${justlogUrl}/channel/${encode(channel)}/user/${encode(user)}/${encode(year)}/${encode(month)}?json=1`,
+  return getAnyLogs(
+    `${justlogUrl}/channel/${encode(channel)}/user/${encode(user)}/${encode(year)}/${encode(month)}?jsonBasic=1`
   );
+}
+
+export function getChannelLogsByID(
+  justlogUrl: string,
+  channel: string,
+  userID: string,
+  year: string | number,
+  month: string | number
+): Promise<LogMessage[]> {
+  const encode = encodeURIComponent;
+  return getAnyLogs(
+    `${justlogUrl}/channel/${encode(channel)}/userid/${encode(userID)}/${encode(year)}/${encode(month)}?jsonBasic=1`
+  );
+}
+
+async function getAnyLogs(url: string): Promise<LogMessage[]> {
+  const res = await fetch(url);
+  if (res.status == 429) {
+    throw new RatelimitError(res.headers.get('Retry-After'));
+  }
+
   if (!res.ok) {
     throw new Error(await res.text().catch((e) => e.toString()));
   }
