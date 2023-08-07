@@ -70,5 +70,10 @@ async function run() {
     updateDays(dayElements, recordedDays);
   };
 
-  worker.postMessage(logList, canvas.height, user, channel, justlogUrl);
+  let userID = '';
+  if (user.startsWith('id:')) {
+    userID = user.substring(3);
+  }
+
+  worker.postMessage(logList, canvas.height, user, userID, channel, justlogUrl);
 }
