@@ -61,7 +61,7 @@ export function getChannelLogs(
 ): Promise<LogMessage[]> {
   const encode = encodeURIComponent;
   return getAnyLogs(
-    `${justlogUrl}/channel/${encode(channel)}/user/${encode(user)}/${encode(year)}/${encode(month)}?jsonBasic=1`
+    `${justlogUrl}/channel/${encode(channel)}/user/${encode(user)}/${encode(year)}/${encode(month)}?json=1`
   );
 }
 
@@ -74,7 +74,7 @@ export function getChannelLogsByID(
 ): Promise<LogMessage[]> {
   const encode = encodeURIComponent;
   return getAnyLogs(
-    `${justlogUrl}/channel/${encode(channel)}/userid/${encode(userID)}/${encode(year)}/${encode(month)}?jsonBasic=1`
+    `${justlogUrl}/channel/${encode(channel)}/userid/${encode(userID)}/${encode(year)}/${encode(month)}?json=1`
   );
 }
 
