@@ -28,8 +28,17 @@ export interface ChannelsResponse {
 
 export const DEFAULT_JUSTLOG_URL = 'https://logs.ivr.fi';
 
-export async function listLogs(justlogUrl: string, channel: string, user: string): Promise<AvailableLog[]> {
-  const res = await fetch(`${justlogUrl}/list?${new URLSearchParams({ channel, user }).toString()}`);
+export async function listLogs(
+  justlogUrl: string,
+  channel: string,
+  user: string,
+  userID: string
+): Promise<AvailableLog[]> {
+  const res = await fetch(
+    `${justlogUrl}/list?${new URLSearchParams(
+      userID.length !== 0 ? { channel, userid: userID } : { channel, user }
+    ).toString()}`
+  );
   if (!res.ok) {
     throw new Error(await res.text().catch((e) => e.toString()));
   }

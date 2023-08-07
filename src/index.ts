@@ -45,9 +45,14 @@ const worker = lazyWorker((res) => workerHandler(res));
 async function run() {
   const channel = channelInput.value;
   const user = usernameInput.value;
+  let userID = '';
+  if (user.startsWith('id:')) {
+    userID = user.substring(3);
+  }
+
   const justlogUrl = getJustlogUrl(justlogInput.value);
 
-  const logList = (await listLogs(justlogUrl, channel, user)).sort(compareAvailableLog);
+  const logList = (await listLogs(justlogUrl, channel, user, userID)).sort(compareAvailableLog);
   if (logList.length === 0) return;
   const start = availableLogToDate(logList[0]);
   const end = availableLogNextMonth(logList[logList.length - 1]);
@@ -69,11 +74,6 @@ async function run() {
     xPos += imageWidth;
     updateDays(dayElements, recordedDays);
   };
-
-  let userID = '';
-  if (user.startsWith('id:')) {
-    userID = user.substring(3);
-  }
 
   worker.postMessage(logList, canvas.height, user, userID, channel, justlogUrl);
 }
