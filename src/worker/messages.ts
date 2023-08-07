@@ -10,6 +10,7 @@ export interface WorkerResponse {
   imageWidth: number;
   imageHeight: number;
   recordedDays: RecordedDays;
+  dateID: number;
 }
 
 export interface WorkerRequest {

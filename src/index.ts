@@ -9,7 +9,15 @@ import {
 import { lazyWorker } from './lazy-worker';
 import { WorkerResponse } from './worker/messages';
 import { clearChildren } from './dom';
-import { generateMonthNames, generateMonthVisuals, updateDays } from './date';
+import {
+  dateMonthID,
+  daysInDateMonth,
+  daysInMonth,
+  generateMonthNames,
+  generateMonthVisuals,
+  months,
+  updateDays,
+} from './date';
 import { initSuggestions } from './suggestions';
 
 const canvas = document.getElementById('target-canvas') as HTMLCanvasElement;
@@ -67,13 +75,22 @@ async function run() {
 
   mainView.classList.remove('hidden');
 
-  let xPos = 0;
-  workerHandler = ({ imageHeight, imageWidth, imageBuffer, recordedDays }) => {
+  const dateMap = makeDateMap(start, end);
+  workerHandler = ({ imageHeight, imageWidth, imageBuffer, recordedDays, dateID }) => {
     const imageData = new ImageData(new Uint8ClampedArray(imageBuffer), imageWidth, imageHeight);
-    canvasCtx.putImageData(imageData, xPos, 0);
-    xPos += imageWidth;
+    canvasCtx.putImageData(imageData, dateMap.get(dateID), 0);
     updateDays(dayElements, recordedDays);
   };
 
   worker.postMessage(logList, canvas.height, user, userID, channel, justlogUrl);
+}
+
+function makeDateMap(start: Date, end: Date) {
+  const map = new Map<number, number>();
+  let x = 0;
+  for (const month of months(start, end)) {
+    map.set(dateMonthID(month), x);
+    x += daysInDateMonth(month);
+  }
+  return map;
 }

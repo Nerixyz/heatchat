@@ -1,23 +1,11 @@
 import { WorkerRequest, WorkerResponse } from './messages';
-import {
-  AvailableLog,
-  availableLogNextMonth,
-  availableLogToDate,
-  getChannelLogs,
-  getChannelLogsByID,
-  LogMessage,
-} from '../justlog';
+import { AvailableLog, getChannelLogs, getChannelLogsByID, LogMessage } from '../justlog';
 import { MessageDateRecorder } from './message-date-recorder';
 import { RatelimitError, Throttler } from './throttle';
+import { daysInMonth, logMonthID } from '../date';
 declare var self: DedicatedWorkerGlobalScope;
 
 self.addEventListener('message', ({ data }) => onMessage(data));
-
-function daysInMonth(log: AvailableLog): number {
-  const start = Number(availableLogToDate(log));
-  const end = Number(availableLogNextMonth(log));
-  return (end - start) / (1000 * 60 * 60 * 24);
-}
 
 function colorPoint(data: ImageData, date: Date) {
   const y = Math.round((data.height * (date.getHours() * 60 + date.getMinutes() + date.getSeconds() / 60)) / (24 * 60));
@@ -84,6 +72,7 @@ async function handleMonth({
     imageWidth: imageData.width,
     imageHeight: imageData.height,
     recordedDays: dateRecorder.intoResponse(),
+    dateID: logMonthID(log),
   };
   self.postMessage(msg, [msg.imageBuffer]);
 }

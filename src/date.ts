@@ -1,9 +1,10 @@
 import { RecordedDays } from './worker/messages';
 import { createElement } from './dom';
+import { AvailableLog, availableLogNextMonth, availableLogToDate } from './justlog';
 
 const MONTH_MAP = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-function* months(start: Date, end: Date) {
+export function* months(start: Date, end: Date) {
   while (start < end) {
     yield new Date(start);
     start.setUTCMonth(start.getUTCMonth() + 1);
@@ -12,7 +13,7 @@ function* months(start: Date, end: Date) {
 
 function* monthNames(start: Date, end: Date) {
   for (const date of months(start, end)) {
-    yield MONTH_MAP[start.getUTCMonth()] as string;
+    yield MONTH_MAP[date.getUTCMonth()] as string;
   }
 }
 
@@ -23,6 +24,26 @@ export function generateMonthNames(host: HTMLDivElement, start: Date, end: Date)
     el.textContent = name;
     host.append(el);
   }
+}
+
+export function daysInMonth(log: AvailableLog): number {
+  const start = Number(availableLogToDate(log));
+  const end = Number(availableLogNextMonth(log));
+  return (end - start) / (1000 * 60 * 60 * 24);
+}
+
+export function daysInDateMonth(date: Date): number {
+  const start = Date.UTC(date.getUTCFullYear(), date.getUTCMonth());
+  const end = Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1);
+  return (end - start) / (1000 * 60 * 60 * 24);
+}
+
+export function logMonthID(log: AvailableLog): number {
+  return (Number(log.year) << 5) | (Number(log.month) - 1);
+}
+
+export function dateMonthID(date: Date): number {
+  return (Number(date.getUTCFullYear()) << 5) | Number(date.getUTCMonth());
 }
 
 export function generateMonthVisuals(host: HTMLDivElement, start: Date, end: Date): Map<number, HTMLDivElement> {
