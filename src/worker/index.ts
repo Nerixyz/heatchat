@@ -1,5 +1,12 @@
 import { WorkerRequest, WorkerResponse } from './messages';
-import { AvailableLog, availableLogNextMonth, availableLogToDate, getChannelLogs, LogMessage } from '../justlog';
+import {
+  AvailableLog,
+  availableLogNextMonth,
+  availableLogToDate,
+  getChannelLogs,
+  getChannelLogsByID,
+  LogMessage,
+} from '../justlog';
 import { MessageDateRecorder } from './message-date-recorder';
 import { RatelimitError, Throttler } from './throttle';
 declare var self: DedicatedWorkerGlobalScope;
@@ -36,6 +43,7 @@ async function onMessage({ logs, ...request }: WorkerRequest) {
           continue inner;
         }
       }
+      break inner;
     }
 
     await handleMonth({ dateRecorder, log, allowRetry: false, ...request }).catch(() => void 0);
@@ -53,7 +61,7 @@ async function handleMonth({
   justlogUrl,
 }: Omit<WorkerRequest, 'logs'> & { log: AvailableLog; dateRecorder: MessageDateRecorder; allowRetry: boolean }) {
   const hasUID = userID.length !== 0;
-  const fetcher = hasUID ? getChannelLogs : getChannelLogs;
+  const fetcher = hasUID ? getChannelLogsByID : getChannelLogs;
   const userSpec = hasUID ? userID : user.toLowerCase();
 
   const logs = await fetcher(justlogUrl, channel, userSpec, log.year, log.month).catch((e) => {
