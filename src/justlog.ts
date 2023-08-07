@@ -5,7 +5,7 @@ export interface AvailableLog {
 
 export interface LogMessage {
   // there are more fields but this is fine
-  timestamp: string,
+  timestamp: string;
 }
 
 export interface JustlogChannel {
@@ -27,9 +27,9 @@ export interface ChannelsResponse {
 export const DEFAULT_JUSTLOG_URL = 'https://logs.ivr.fi';
 
 export async function listLogs(justlogUrl: string, channel: string, user: string): Promise<AvailableLog[]> {
-  const res = await fetch(`${ justlogUrl }/list?${ new URLSearchParams({ channel, user }).toString() }`);
+  const res = await fetch(`${justlogUrl}/list?${new URLSearchParams({ channel, user }).toString()}`);
   if (!res.ok) {
-    throw new Error(await res.text().catch(e => e.toString()));
+    throw new Error(await res.text().catch((e) => e.toString()));
   }
   const json: LogListResponse = await res.json();
   return json.availableLogs;
@@ -46,7 +46,7 @@ export function availableLogNextMonth(log: AvailableLog): Date {
 function availableLogMonth(log: AvailableLog) {
   return 12 * Number(log.year) + Number(log.month);
 }
-export function compareAvailableLog(a: AvailableLog, b: AvailableLog): number  {
+export function compareAvailableLog(a: AvailableLog, b: AvailableLog): number {
   return availableLogMonth(a) - availableLogMonth(b);
 }
 
@@ -55,21 +55,23 @@ export async function getChannelLogs(
   channel: string,
   user: string,
   year: string | number,
-  month: string | number
+  month: string | number,
 ): Promise<LogMessage[]> {
   const encode = encodeURIComponent;
-  const res = await fetch(`${ justlogUrl }/channel/${ encode(channel) }/user/${ encode(user) }/${ encode(year) }/${ encode(month) }?json=1`);
+  const res = await fetch(
+    `${justlogUrl}/channel/${encode(channel)}/user/${encode(user)}/${encode(year)}/${encode(month)}?json=1`,
+  );
   if (!res.ok) {
-    throw new Error(await res.text().catch(e => e.toString()));
+    throw new Error(await res.text().catch((e) => e.toString()));
   }
   const json: LogResponse = await res.json();
   return json.messages;
 }
 
 export async function getAvailableChannels(justlogUrl: string): Promise<JustlogChannel[]> {
-  const res = await fetch(`${ justlogUrl }/channels`);
+  const res = await fetch(`${justlogUrl}/channels`);
   if (!res.ok) {
-    throw new Error(await res.text().catch(e => e.toString()));
+    throw new Error(await res.text().catch((e) => e.toString()));
   }
   const json: ChannelsResponse = await res.json();
   return json.channels;

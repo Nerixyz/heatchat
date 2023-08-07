@@ -34,9 +34,9 @@ export function generateMonthVisuals(host: HTMLDivElement, start: Date, end: Dat
       yearName.textContent = date.getUTCFullYear().toString();
 
       host.append(yearName);
-      if(year === 0 && date.getUTCMonth() != 0) {
+      if (year === 0 && date.getUTCMonth() != 0) {
         const filler = createElement('div', 'filler');
-        filler.style.setProperty('--span', (date.getUTCMonth()).toString());
+        filler.style.setProperty('--span', date.getUTCMonth().toString());
         host.append(filler);
       }
 
@@ -76,7 +76,7 @@ function generateMonthVisual(host: HTMLDivElement, start: Date, days: Map<number
 
   const day = new Date(start);
 
-  const startEl = createElement('div', 'day', `start-day-${ day.getUTCDay() }`);
+  const startEl = createElement('div', 'day', `start-day-${day.getUTCDay()}`);
   monthEl.append(startEl);
   days.set(Number(day), startEl);
 

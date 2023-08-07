@@ -12,7 +12,7 @@ export function initSuggestions(datalist: HTMLDataListElement, urlEl: HTMLInputE
 async function updateChannels(datalist: HTMLDataListElement, justlogInput: HTMLInputElement) {
   const channels = await getAvailableChannels(getJustlogUrl(justlogInput.value));
   clearChildren(datalist);
-  for(const channel of channels) {
+  for (const channel of channels) {
     const option = createElement('option');
     option.value = channel.name;
     datalist.append(option);

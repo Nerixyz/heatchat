@@ -7,14 +7,14 @@ export class MessageDateRecorder {
   push(date: Date) {
     const ts = date.setUTCHours(0, 0, 0, 0);
     const value = (this.#days.get(ts) ?? 0) + 1;
-    if(this.#maxAmount < value) this.#maxAmount = value;
-    this.#days.set(ts, value)
+    if (this.#maxAmount < value) this.#maxAmount = value;
+    this.#days.set(ts, value);
   }
 
-  intoResponse(): RecordedDays  {
+  intoResponse(): RecordedDays {
     return {
       days: this.#days,
       maxAmount: this.#maxAmount,
-    }
+    };
   }
 }
