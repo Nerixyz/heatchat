@@ -213,3 +213,32 @@ canvas {
   image-rendering: pixelated; /* Awesome future-browsers       */
   -ms-interpolation-mode: nearest-neighbor; /* IE                            */
 }
+
+footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 7rem;
+}
+
+.credits {
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+footer a {
+  color: var(--day-color);
+  text-decoration: none;
+}
+
+.github-icon {
+  width: 3rem;
+}
+
+.github-link {
+  color: var(--text-color);
+  transition: color 0.25s;
+}
+.github-link:is(:hover, :focus, :focus-visible) {
+  color: var(--day-color);
+}
