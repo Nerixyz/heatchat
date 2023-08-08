@@ -43,17 +43,18 @@ main {
   grid-template-rows: 1fr auto;
   grid-template-columns: 1fr auto;
   margin: 10px;
-  transition:
-    opacity 500ms,
-    transform 150ms var(--easing-func);
+  transition: opacity 0.5s, transform 0.15s var(--easing-func), box-shadow 0.25s;
   transform: scale(1);
   background-color: var(--dark150);
   padding: 2rem;
   border-radius: 5px;
+  z-index: 4;
+  box-shadow: 0 0 0 0 transparent;
 }
 
 #main-view:hover {
   transform: scale(1.4) translateY(25%);
+  box-shadow: 0 15px 50px 8px #000b;
 }
 
 #hours {
