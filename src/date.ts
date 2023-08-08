@@ -99,6 +99,7 @@ function generateMonthVisual(host: HTMLDivElement, start: Date, days: Map<number
   const day = new Date(start);
 
   const startEl = createElement('div', 'day', `start-day-${day.getUTCDay()}`);
+  startEl.style.setProperty('--date', `'${DT_FORMAT.format(day)}'`);
   monthEl.append(startEl);
   days.set(Number(day), startEl);
 
