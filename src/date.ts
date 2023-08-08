@@ -5,9 +5,10 @@ import { AvailableLog, availableLogNextMonth, availableLogToDate } from './justl
 const MONTH_MAP = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export function* months(start: Date, end: Date) {
-  while (start < end) {
-    yield new Date(start);
-    start.setUTCMonth(start.getUTCMonth() + 1);
+  let d = new Date(start);
+  while (d < end) {
+    yield new Date(d);
+    d.setUTCMonth(d.getUTCMonth() + 1);
   }
 }
 
@@ -63,7 +64,7 @@ export function generateMonthVisuals(host: HTMLDivElement, start: Date, end: Dat
 
       year = date.getUTCFullYear();
     }
-    generateMonthVisual(host, start, days);
+    generateMonthVisual(host, date, days);
   }
   return days;
 }
