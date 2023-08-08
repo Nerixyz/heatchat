@@ -18,11 +18,37 @@ function* monthNames(start: Date, end: Date) {
   }
 }
 
+function* years(start: Date, end: Date) {
+  let startMonth = 0;
+  let year = 0;
+  let curr = 1;
+  for (const date of months(start, end)) {
+    if (date.getUTCFullYear() != year) {
+      if (year) {
+        yield [year, [startMonth, curr]] as const;
+      }
+      year = date.getUTCFullYear();
+      startMonth = curr;
+    }
+    curr++;
+  }
+  if (year) {
+    yield [year, [startMonth, curr]] as const;
+  }
+}
+
 export function generateMonthNames(host: HTMLDivElement, start: Date, end: Date) {
   for (const name of monthNames(start, end)) {
     const el = document.createElement('div');
     el.classList.add('month-name');
     el.textContent = name;
+    host.append(el);
+  }
+
+  for (const [year, [mStart, mEnd]] of years(start, end)) {
+    const el = createElement('div', 'year-name');
+    el.textContent = year.toString();
+    el.style.setProperty('--month-span', `${mStart} / ${mEnd}`);
     host.append(el);
   }
 }
