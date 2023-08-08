@@ -37,6 +37,7 @@ reqForm.addEventListener('submit', (e) => {
   runWrapper();
 });
 initSuggestions(suggestionsEl, justlogInput);
+initFields();
 
 let running = false;
 function runWrapper() {
@@ -51,6 +52,7 @@ let workerHandler: (res: WorkerResponse) => void = () => undefined;
 const worker = lazyWorker((res) => workerHandler(res));
 
 async function run() {
+  updateHash();
   const channel = channelInput.value;
   const user = usernameInput.value;
   let userID = '';
@@ -93,4 +95,36 @@ function makeDateMap(start: Date, end: Date) {
     x += daysInDateMonth(month);
   }
   return map;
+}
+
+function initFields() {
+  if (location.hash.length < 1) {
+    return;
+  }
+  try {
+    const params = new URLSearchParams(location.hash.substring(1));
+    const set = (input: HTMLInputElement, key: string) => {
+      if (params.has(key)) {
+        input.value = params.get(key) ?? '';
+      }
+    };
+    set(justlogInput, 'justlog');
+    set(channelInput, 'channel');
+    set(usernameInput, 'user');
+  } catch (e) {
+    console.warn('Failed to parse hash', e);
+  }
+}
+
+function updateHash() {
+  const params = new URLSearchParams();
+  const put = (input: HTMLInputElement, key: string) => {
+    if (input.value) {
+      params.set(key, input.value);
+    }
+  };
+  put(justlogInput, 'justlog');
+  put(channelInput, 'channel');
+  put(usernameInput, 'user');
+  location.hash = `#${params.toString()}`;
 }
