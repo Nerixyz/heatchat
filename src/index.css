@@ -11,7 +11,8 @@
 
   --small-text: 0.5rem;
 
-  --day-color: #9029f1;
+  --raw-day-color: 144, 41, 241;
+  --day-color: rgb(var(--raw-day-color));
   --easing-func: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -121,13 +122,31 @@ main {
 .month-visual .day {
   width: 10px;
   height: 10px;
-  background-color: var(--day-color);
-  opacity: var(--intensity, 0);
+  background-color: rgba(var(--raw-day-color), var(--intensity, 0));
   transform: scale(1);
   transition: transform 150ms var(--easing-func);
+  z-index: 1;
 }
 .month-visual .day:hover {
   transform: scale(2);
+  z-index: 2;
+}
+
+.month-visual .day::after {
+  display: none;
+  content: var(--date, '{no date?!}');
+  width: max-content;
+  height: max-content;
+  position: relative;
+  font-size: small;
+  top: 100%;
+  background: var(--dark200);
+  padding: 0.1rem 0.2rem;
+  border-radius: 4px;
+}
+
+.month-visual .day:hover::after {
+  display: block;
 }
 
 .month-visual .day.start-day-0 {

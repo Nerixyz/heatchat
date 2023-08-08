@@ -79,6 +79,7 @@ export function updateDays(days: Map<number, HTMLDivElement>, recorded: Recorded
   }
 }
 
+const DT_FORMAT = new Intl.DateTimeFormat(undefined, { dateStyle: 'long' });
 function generateMonthVisual(host: HTMLDivElement, start: Date, days: Map<number, HTMLDivElement>) {
   const end = new Date(start);
   end.setUTCMonth(end.getUTCMonth() + 1);
@@ -104,12 +105,11 @@ function generateMonthVisual(host: HTMLDivElement, start: Date, days: Map<number
   day.setUTCDate(day.getUTCDate() + 1);
   for (; day < end; day.setUTCDate(day.getUTCDate() + 1)) {
     if (day.getUTCHours() != 0) {
-      console.log('flip', day);
       day.setUTCHours(0, 0, 0, 0);
-      console.log('post', day);
     }
 
     const el = createElement('div', 'day');
+    el.style.setProperty('--date', `'${DT_FORMAT.format(day)}'`);
     monthEl.append(el);
     days.set(Number(day), el);
   }
