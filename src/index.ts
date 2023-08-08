@@ -78,7 +78,7 @@ async function run() {
   const dateMap = makeDateMap(start, end);
   workerHandler = ({ imageHeight, imageWidth, imageBuffer, recordedDays, dateID }) => {
     const imageData = new ImageData(new Uint8ClampedArray(imageBuffer), imageWidth, imageHeight);
-    canvasCtx.putImageData(imageData, dateMap.get(dateID), 0);
+    canvasCtx.putImageData(imageData, dateMap.get(dateID) ?? 0, 0);
     updateDays(dayElements, recordedDays);
   };
 
