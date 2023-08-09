@@ -67,11 +67,9 @@ export function getChannelLogs(
   user: string,
   year: string | number,
   month: string | number
-): Promise<LogMessage[]> {
+): Promise<Response> {
   const encode = encodeURIComponent;
-  return getAnyLogs(
-    `${justlogUrl}/channel/${encode(channel)}/user/${encode(user)}/${encode(year)}/${encode(month)}?json=1`
-  );
+  return getAnyLogs(`${justlogUrl}/channel/${encode(channel)}/user/${encode(user)}/${encode(year)}/${encode(month)}`);
 }
 
 export function getChannelLogsByID(
@@ -80,14 +78,14 @@ export function getChannelLogsByID(
   userID: string,
   year: string | number,
   month: string | number
-): Promise<LogMessage[]> {
+): Promise<Response> {
   const encode = encodeURIComponent;
   return getAnyLogs(
-    `${justlogUrl}/channel/${encode(channel)}/userid/${encode(userID)}/${encode(year)}/${encode(month)}?json=1`
+    `${justlogUrl}/channel/${encode(channel)}/userid/${encode(userID)}/${encode(year)}/${encode(month)}`
   );
 }
 
-async function getAnyLogs(url: string): Promise<LogMessage[]> {
+async function getAnyLogs(url: string): Promise<Response> {
   const res = await fetch(url);
   if (res.status == 429) {
     throw new RatelimitError(res.headers.get('Retry-After'));
@@ -96,8 +94,7 @@ async function getAnyLogs(url: string): Promise<LogMessage[]> {
   if (!res.ok) {
     throw new Error(await res.text().catch((e) => e.toString()));
   }
-  const json: LogResponse = await res.json();
-  return json.messages;
+  return res;
 }
 
 export async function getAvailableChannels(justlogUrl: string): Promise<JustlogChannel[]> {

@@ -1,4 +1,4 @@
-import { WorkerRequest, WorkerResponse } from './messages';
+import { WorkerRequest, WorkerResponse, dates } from './messages';
 import { AvailableLog, getChannelLogs, getChannelLogsByID, LogMessage } from '../justlog';
 import { MessageDateRecorder } from './message-date-recorder';
 import { RatelimitError, Throttler } from './throttle';
@@ -33,7 +33,6 @@ async function onMessage({ logs, ...request }: WorkerRequest) {
       }
       break inner;
     }
-
     await handleMonth({ dateRecorder, log, allowRetry: false, ...request }).catch(() => void 0);
   }
 }
@@ -53,20 +52,21 @@ async function handleMonth({
   const userSpec = hasUID ? userID : user.toLowerCase();
 
   const logs = await fetcher(justlogUrl, channel, userSpec, log.year, log.month).catch((e) => {
+    console.warn(e);
     if (e instanceof RatelimitError && allowRetry) {
       throw e;
     }
-    return [] as LogMessage[];
+    return new Response();
   });
 
   const days = daysInMonth(log);
   const imageData = new ImageData(days, height);
 
-  for (const message of logs) {
-    const date = new Date(message.timestamp);
+  for await (const date of dates(logs)) {
     colorPoint(imageData, date);
     dateRecorder.push(date);
   }
+
   const msg: WorkerResponse = {
     imageBuffer: imageData.data.buffer,
     imageWidth: imageData.width,
