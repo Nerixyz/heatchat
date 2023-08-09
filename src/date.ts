@@ -14,7 +14,7 @@ export function* months(start: Date, end: Date) {
 
 function* monthNames(start: Date, end: Date) {
   for (const date of months(start, end)) {
-    yield MONTH_MAP[date.getUTCMonth()] as string;
+    yield [MONTH_MAP[date.getUTCMonth()] as string, date] as const;
   }
 }
 
@@ -38,12 +38,15 @@ function* years(start: Date, end: Date) {
 }
 
 export function generateMonthNames(host: HTMLDivElement, start: Date, end: Date) {
-  for (const name of monthNames(start, end)) {
+  const columns = [];
+  for (const [name, date] of monthNames(start, end)) {
     const el = document.createElement('div');
     el.classList.add('month-name');
+    columns.push(`${daysInDateMonth(date)}px`);
     el.textContent = name;
     host.append(el);
   }
+  host.style.setProperty('--cols', columns.join(' '));
 
   for (const [year, [mStart, mEnd]] of years(start, end)) {
     const el = createElement('div', 'year-name');

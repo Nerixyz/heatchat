@@ -68,7 +68,8 @@ main {
 
 #months {
   display: grid;
-  grid-auto-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  grid-template-columns: var(--cols);
   grid-auto-flow: column;
 }
 
