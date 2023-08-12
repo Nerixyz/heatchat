@@ -5,7 +5,6 @@ import throttle from 'lodash.throttle';
 export function initSuggestions(datalist: HTMLDataListElement, urlEl: HTMLInputElement) {
   const throttledUpdate = throttle(() => updateChannels(datalist, urlEl), 1000);
   urlEl.addEventListener('change', throttledUpdate);
-  // urlEl.addEventListener('keyup', throttledUpdate);
   throttledUpdate();
 }
 
