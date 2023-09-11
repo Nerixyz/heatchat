@@ -33,17 +33,18 @@ export async function listLogs(
   channel: string,
   user: string,
   userID: string
-): Promise<AvailableLog[]> {
+): Promise<{ logs: AvailableLog[]; capabilities: string[] }> {
   const res = await fetch(
     `${justlogUrl}/list?${new URLSearchParams(
       userID.length !== 0 ? { channel, userid: userID } : { channel, user }
     ).toString()}`
   );
+  const capabilities = getCapabilities(res);
   if (!res.ok) {
     throw new Error(await res.text().catch((e) => e.toString()));
   }
   const json: LogListResponse = await res.json();
-  return json.availableLogs;
+  return { logs: json.availableLogs, capabilities };
 }
 
 export function availableLogToDate(log: AvailableLog): Date {
@@ -85,6 +86,24 @@ export function getChannelLogsByID(
   );
 }
 
+export function getAllChannelLogs(justlogUrl: string, channel: string, user: string): Promise<Response> {
+  const encode = encodeURIComponent;
+  const query = new URLSearchParams({
+    from: new Date(0).toISOString(),
+    to: new Date().toISOString(),
+  });
+  return getAnyLogs(`${justlogUrl}/channel/${encode(channel)}/user/${encode(user)}?${query}`);
+}
+
+export function getAllChannelLogsByID(justlogUrl: string, channel: string, userID: string): Promise<Response> {
+  const encode = encodeURIComponent;
+  const query = new URLSearchParams({
+    from: new Date(0).toISOString(),
+    to: new Date().toISOString(),
+  });
+  return getAnyLogs(`${justlogUrl}/channel/${encode(channel)}/userid/${encode(userID)}?${query}`);
+}
+
 async function getAnyLogs(url: string): Promise<Response> {
   const res = await fetch(url);
   if (res.status == 429) {
@@ -108,4 +127,12 @@ export async function getAvailableChannels(justlogUrl: string): Promise<JustlogC
 
 export function getJustlogUrl(userUrl: string): string {
   return userUrl.startsWith('http') ? userUrl : DEFAULT_JUSTLOG_URL;
+}
+
+function getCapabilities(res: Response): string[] {
+  const header = res.headers.get('x-rustlog-capabilities') ?? '';
+  if (!header) {
+    return [];
+  }
+  return header.split(',').map((x) => x.trim());
 }

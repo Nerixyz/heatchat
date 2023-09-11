@@ -1,8 +1,15 @@
 import { WorkerRequest, WorkerResponse, dates } from './messages';
-import { AvailableLog, getChannelLogs, getChannelLogsByID, LogMessage } from '../justlog';
+import {
+  AvailableLog,
+  getAllChannelLogs,
+  getAllChannelLogsByID,
+  getChannelLogs,
+  getChannelLogsByID,
+  LogMessage,
+} from '../justlog';
 import { MessageDateRecorder } from './message-date-recorder';
 import { RatelimitError, Throttler } from './throttle';
-import { daysInMonth, logMonthID } from '../date';
+import { dateMonthID, daysInDateMonth, daysInMonth, logMonthID } from '../date';
 declare var self: DedicatedWorkerGlobalScope;
 
 self.addEventListener('message', ({ data }) => onMessage(data));
@@ -16,6 +23,9 @@ function colorPoint(data: ImageData, date: Date) {
 }
 
 async function onMessage({ logs, ...request }: WorkerRequest) {
+  if (request.hasArbitraryRangeQuery) {
+    return handleArbitraryRange(request);
+  }
   const dateRecorder = new MessageDateRecorder();
   const throttle = new Throttler();
   outer: for (const log of logs) {
@@ -75,4 +85,57 @@ async function handleMonth({
     dateID: logMonthID(log),
   };
   self.postMessage(msg, [msg.imageBuffer]);
+}
+
+async function handleArbitraryRange({ height, user, userID, channel, justlogUrl }: Omit<WorkerRequest, 'logs'>) {
+  const dateRecorder = new MessageDateRecorder();
+
+  const hasUID = userID.length !== 0;
+  const fetcher = hasUID ? getAllChannelLogsByID : getAllChannelLogs;
+  const userSpec = hasUID ? userID : user.toLowerCase();
+
+  const logs = await fetcher(justlogUrl, channel, userSpec).catch((e) => {
+    console.warn(e);
+    return new Response();
+  });
+
+  let month: { days: number; image: ImageData; date: Date } | null = null;
+
+  const flush = () => {
+    if (month === null) {
+      return;
+    }
+
+    const msg: WorkerResponse = {
+      imageBuffer: month.image.data.buffer,
+      imageWidth: month.image.width,
+      imageHeight: month.image.height,
+      recordedDays: dateRecorder.intoResponse(),
+      dateID: dateMonthID(month.date),
+    };
+    self.postMessage(msg, [msg.imageBuffer]);
+
+    month = null;
+  };
+  const sameMonth = (a: Date, b: Date) =>
+    a.getUTCFullYear() === b.getUTCFullYear() && a.getUTCMonth() === b.getUTCMonth();
+
+  for await (const date of dates(logs)) {
+    if (month && !sameMonth(month.date, date)) {
+      flush();
+    }
+    if (!month) {
+      const days = daysInDateMonth(date);
+      month = {
+        date,
+        days,
+        image: new ImageData(days, height),
+      };
+    }
+
+    colorPoint(month.image, date);
+    dateRecorder.push(date);
+  }
+
+  flush();
 }

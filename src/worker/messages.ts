@@ -20,6 +20,7 @@ export interface WorkerRequest {
   userID: string;
   channel: string;
   justlogUrl: string;
+  hasArbitraryRangeQuery: boolean;
 }
 
 const NEWLINE_CHAR = '\n'.charCodeAt(0);

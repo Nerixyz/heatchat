@@ -62,7 +62,8 @@ async function run() {
 
   const justlogUrl = getJustlogUrl(justlogInput.value);
 
-  const logList = (await listLogs(justlogUrl, channel, user, userID)).sort(compareAvailableLog);
+  const { logs, capabilities } = await listLogs(justlogUrl, channel, user, userID);
+  const logList = logs.sort(compareAvailableLog);
   if (logList.length === 0) return;
   const start = availableLogToDate(logList[0]);
   const end = availableLogNextMonth(logList[logList.length - 1]);
@@ -84,7 +85,15 @@ async function run() {
     updateDays(dayElements, recordedDays);
   };
 
-  worker.postMessage(logList, canvas.height, user, userID, channel, justlogUrl);
+  worker.postMessage({
+    logs: logList,
+    height: canvas.height,
+    user,
+    userID,
+    channel,
+    justlogUrl,
+    hasArbitraryRangeQuery: capabilities.includes('arbitrary-range-query'),
+  });
 }
 
 function makeDateMap(start: Date, end: Date) {
